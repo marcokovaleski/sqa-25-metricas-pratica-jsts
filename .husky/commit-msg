@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Padrão de commit: tipo(escopo): descrição
+# Tipos válidos: feat, fix, docs, style, refactor, test, chore
+# Exemplo: feat(auth): adicionar validação de email
+
+commit_regex='^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .{1,50}'
+
+if ! grep -qE "$commit_regex" "$1"; then
+    echo "❌ ERRO: Mensagem de commit inválida!"
+    echo ""
+    echo "📋 Formato esperado: tipo(escopo): descrição"
+    echo ""
+    echo "📌 Tipos válidos:"
+    echo "  • feat:     nova funcionalidade"
+    echo "  • fix:      correção de bug"
+    echo "  • docs:     documentação"
+    echo "  • style:    formatação, espaços"
+    echo "  • refactor: refatoração de código"
+    echo "  • test:     adição/correção de testes"
+    echo "  • chore:    tarefas de build, configuração"
+    echo ""
+    echo "✅ Exemplos válidos:"
+    echo "  • feat(auth): adicionar validação de email"
+    echo "  • fix(utils): corrigir validação de CPF"
+    echo "  • refactor: simplificar função de senha"
+    echo "  • test: adicionar testes para EmailUtils"
+    echo ""
+    echo "❌ Sua mensagem: $(cat $1)"
+    exit 1
+fi
+
+echo "✅ Mensagem de commit válida!"
