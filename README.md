@@ -1,4 +1,4 @@
-# Atividade Métricas JS
+# Atividade #4 - Prática de métricas: Refatoração para atingir a qualidade
 
 Projeto didático para análise de métricas de código e refatoração.
 
@@ -7,7 +7,7 @@ Projeto didático para análise de métricas de código e refatoração.
 ### 1. Clone o repositório
 ```bash
 git clone <url-do-repositorio>
-cd atividade-metricas-js
+cd sqa-25-metricas-pratica-jsts
 ```
 
 ### 2. Instale as dependências
@@ -60,7 +60,7 @@ O projeto usa Conventional Commits. Exemplos:
 - `test: adicionar testes`
 - `chore: configuração de ferramentas`
 
-## 🪝 Hooks do Husky
+## 👓 Hooks do Husky
 
 O projeto utiliza Husky para gerenciar hooks do Git automaticamente:
 
