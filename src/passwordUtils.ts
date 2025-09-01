@@ -1,8 +1,20 @@
-export function validatePassword(password: any): boolean {
-  // TODO: remover console.log depois
-  console.log("Validando senha:", password);
+interface PasswordConfig {
+  minLength: number;
+  maxLength: number;
+  requireUppercase: boolean;
+  requireLowercase: boolean;
+  requireNumbers: boolean;
+  requireSymbols: boolean;
+  preventSequential: boolean;
+  preventRepeating: boolean;
+}
 
-  const x: any = {
+export function validatePassword(password: string): boolean {
+  if (!password) {
+    return false;
+  }
+
+  const config: PasswordConfig = {
     minLength: 8,
     maxLength: 128,
     requireUppercase: true,
@@ -13,52 +25,97 @@ export function validatePassword(password: any): boolean {
     preventRepeating: true,
   };
 
-  const x1: string[] = [];
+  const violations: string[] = [];
 
-  if (password.length < x.minLength) {
-    x1.push(`Senha deve ter pelo menos ${x.minLength} caracteres`);
+  violations.push(...validateLength(password, config));
+  violations.push(...validateCharacterTypes(password, config));
+  violations.push(...validateSequentialPatterns(password, config));
+  violations.push(...validateRepeatingCharacters(password, config));
+
+  return violations.length === 0;
+}
+
+function validateLength(password: string, config: PasswordConfig): string[] {
+  const violations: string[] = [];
+
+  if (password.length < config.minLength) {
+    violations.push(`Senha deve ter pelo menos ${config.minLength} caracteres`);
   }
 
-  if (x.maxLength && password.length > x.maxLength) {
-    x1.push(`Senha deve ter no máximo ${x.maxLength} caracteres`);
+  if (config.maxLength && password.length > config.maxLength) {
+    violations.push(`Senha deve ter no máximo ${config.maxLength} caracteres`);
   }
 
-  if (x.requireUppercase && !/[A-Z]/.test(password)) {
-    x1.push("Senha deve conter pelo menos uma letra maiúscula");
-  }
+  return violations;
+}
 
-  if (x.requireLowercase && !/[a-z]/.test(password)) {
-    x1.push("Senha deve conter pelo menos uma letra minúscula");
-  }
+function validateCharacterTypes(password: string, config: PasswordConfig): string[] {
+  const violations: string[] = [];
 
-  if (x.requireNumbers && !/\d/.test(password)) {
-    x1.push("Senha deve conter pelo menos um número");
-  }
+  violations.push(...validateUppercase(password, config));
+  violations.push(...validateLowercase(password, config));
+  violations.push(...validateNumbers(password, config));
+  violations.push(...validateSymbols(password, config));
 
+  return violations;
+}
+
+function validateUppercase(password: string, config: PasswordConfig): string[] {
+  if (config.requireUppercase && !/[A-Z]/.test(password)) {
+    return ["Senha deve conter pelo menos uma letra maiúscula"];
+  }
+  return [];
+}
+
+function validateLowercase(password: string, config: PasswordConfig): string[] {
+  if (config.requireLowercase && !/[a-z]/.test(password)) {
+    return ["Senha deve conter pelo menos uma letra minúscula"];
+  }
+  return [];
+}
+
+function validateNumbers(password: string, config: PasswordConfig): string[] {
+  if (config.requireNumbers && !/\d/.test(password)) {
+    return ["Senha deve conter pelo menos um número"];
+  }
+  return [];
+}
+
+function validateSymbols(password: string, config: PasswordConfig): string[] {
   if (
-    x.requireSymbols &&
+    config.requireSymbols &&
     !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
   ) {
-    x1.push("Senha deve conter pelo menos um caractere especial");
+    return ["Senha deve conter pelo menos um caractere especial"];
   }
+  return [];
+}
 
-  if (x.preventSequential) {
-    const temp: any = [/123/, /abc/, /qwe/, /asd/, /zxc/];
+function validateSequentialPatterns(password: string, config: PasswordConfig): string[] {
+  const violations: string[] = [];
 
-    for (const pattern of temp) {
+  if (config.preventSequential) {
+    const sequentialPatterns = [/123/, /abc/, /qwe/, /asd/, /zxc/];
+
+    for (const pattern of sequentialPatterns) {
       if (pattern.test(password.toLowerCase())) {
-        x1.push("Senha não deve conter sequências");
+        violations.push("Senha não deve conter sequências");
         break;
       }
     }
   }
 
-  if (x.preventRepeating) {
+  return violations;
+}
+
+function validateRepeatingCharacters(password: string, config: PasswordConfig): string[] {
+  const violations: string[] = [];
+
+  if (config.preventRepeating) {
     if (/(.)\1{2,}/.test(password)) {
-      x1.push("Senha não deve ter caracteres repetidos em excesso");
+      violations.push("Senha não deve ter caracteres repetidos em excesso");
     }
   }
 
-  console.log("Violações encontradas:", x1.length);
-  return x1.length === 0;
+  return violations;
 }

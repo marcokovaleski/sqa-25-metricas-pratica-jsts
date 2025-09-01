@@ -1,6 +1,9 @@
 import { CPFUtils } from "../CPFUtils";
 
-describe("CPFUtils", () => {
+const CPF_LENGTH = 11;
+const TEST_ITERATIONS = 100;
+
+function testValidateCPF(): void {
   describe("validateCPF", () => {
     it("should validate a valid CPF", () => {
       const validCPF = "123.456.789-09";
@@ -38,14 +41,16 @@ describe("CPFUtils", () => {
     });
 
     it("should handle null input", () => {
-      expect(() => CPFUtils.validateCPF(null as any)).toThrow();
+      expect(() => CPFUtils.validateCPF(null as unknown as string)).toThrow();
     });
 
     it("should handle undefined input", () => {
-      expect(() => CPFUtils.validateCPF(undefined as any)).toThrow();
+      expect(() => CPFUtils.validateCPF(undefined as unknown as string)).toThrow();
     });
   });
+}
 
+function testMaskCPF(): void {
   describe("maskCPF", () => {
     it("should mask a valid CPF", () => {
       const unmaskedCPF = "12345678909";
@@ -75,14 +80,16 @@ describe("CPFUtils", () => {
     });
 
     it("should handle null input", () => {
-      expect(() => CPFUtils.maskCPF(null as any)).toThrow();
+      expect(() => CPFUtils.maskCPF(null as unknown as string)).toThrow();
     });
 
     it("should handle undefined input", () => {
-      expect(() => CPFUtils.maskCPF(undefined as any)).toThrow();
+      expect(() => CPFUtils.maskCPF(undefined as unknown as string)).toThrow();
     });
   });
+}
 
+function testUnmaskCPF(): void {
   describe("unmaskCPF", () => {
     it("should remove mask from CPF", () => {
       const maskedCPF = "123.456.789-09";
@@ -105,18 +112,20 @@ describe("CPFUtils", () => {
     });
 
     it("should handle null input", () => {
-      expect(() => CPFUtils.unmaskCPF(null as any)).toThrow();
+      expect(() => CPFUtils.unmaskCPF(null as unknown as string)).toThrow();
     });
 
     it("should handle undefined input", () => {
-      expect(() => CPFUtils.unmaskCPF(undefined as any)).toThrow();
+      expect(() => CPFUtils.unmaskCPF(undefined as unknown as string)).toThrow();
     });
   });
+}
 
+function testGenerateValidCPF(): void {
   describe("generateValidCPF", () => {
     it("should generate a valid CPF", () => {
       const result = CPFUtils.generateValidCPF();
-      expect(result).toHaveLength(11);
+      expect(result).toHaveLength(CPF_LENGTH);
       expect(CPFUtils.validateCPF(result)).toBe(true);
     });
 
@@ -131,7 +140,9 @@ describe("CPFUtils", () => {
       expect(result).toMatch(/^\d+$/);
     });
   });
+}
 
+function testIsValidFormat(): void {
   describe("isValidFormat", () => {
     it("should validate masked format", () => {
       const maskedCPF = "123.456.789-09";
@@ -163,19 +174,21 @@ describe("CPFUtils", () => {
     });
 
     it("should handle null input", () => {
-      const result = CPFUtils.isValidFormat(null as any);
+      const result = CPFUtils.isValidFormat(null as unknown as string);
       expect(result).toBe(false);
     });
 
     it("should handle undefined input", () => {
-      const result = CPFUtils.isValidFormat(undefined as any);
+      const result = CPFUtils.isValidFormat(undefined as unknown as string);
       expect(result).toBe(false);
     });
   });
+}
 
+function testEdgeCases(): void {
   describe("edge cases", () => {
     it("should handle very long strings", () => {
-      const longString = "1".repeat(100);
+      const longString = "1".repeat(TEST_ITERATIONS);
       expect(CPFUtils.validateCPF(longString)).toBe(false);
       expect(() => CPFUtils.maskCPF(longString)).toThrow();
     });
@@ -187,9 +200,17 @@ describe("CPFUtils", () => {
     });
 
     it("should handle CPF with spaces", () => {
-      const cpfWithSpaces = " 123.456.789-09 ";
-      const result = CPFUtils.validateCPF(cpfWithSpaces);
-      expect(result).toBe(true);
+      const cpfWithSpaces = "123 456 789 09";
+      expect(CPFUtils.validateCPF(cpfWithSpaces)).toBe(true);
     });
   });
+}
+
+describe("CPFUtils", () => {
+  testValidateCPF();
+  testMaskCPF();
+  testUnmaskCPF();
+  testGenerateValidCPF();
+  testIsValidFormat();
+  testEdgeCases();
 });
